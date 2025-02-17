@@ -30,6 +30,8 @@ export default defineConfig(({ mode }) => ({
         chunkFileNames: "[name].js",
         assetFileNames: "[name].[ext]"
       }
-    }
+    },
+    // Copy extension files to build output
+    copyPublicDir: true
   }
 }));
