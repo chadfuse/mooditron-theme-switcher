@@ -4,6 +4,12 @@ import ThemeCard from "@/components/ThemeCard";
 import TimeBasedSwitch from "@/components/TimeBasedSwitch";
 import { useToast } from "@/components/ui/use-toast";
 
+declare global {
+  interface Window {
+    chrome: typeof chrome;
+  }
+}
+
 const moodThemes = [
   { name: "Happy", color: "rgb(255, 217, 61)" },
   { name: "Calm", color: "rgb(149, 225, 211)" },
@@ -19,8 +25,8 @@ const Index = () => {
 
   useEffect(() => {
     // Load saved preferences
-    if (chrome?.storage?.local) {
-      chrome.storage.local.get(['selectedTheme', 'timeBasedEnabled'], (result) => {
+    if (typeof window !== 'undefined' && window.chrome?.storage?.local) {
+      window.chrome.storage.local.get(['selectedTheme', 'timeBasedEnabled'], (result) => {
         if (result.selectedTheme) {
           setSelectedTheme(result.selectedTheme);
         }
@@ -35,17 +41,17 @@ const Index = () => {
     setSelectedTheme(themeName);
     
     // Save theme preference
-    if (chrome?.storage?.local) {
-      chrome.storage.local.set({ selectedTheme: themeName });
+    if (typeof window !== 'undefined' && window.chrome?.storage?.local) {
+      window.chrome.storage.local.set({ selectedTheme: themeName });
     }
     
     // Send message to background script to update theme
-    if (chrome?.runtime?.sendMessage) {
-      chrome.runtime.sendMessage(
+    if (typeof window !== 'undefined' && window.chrome?.runtime?.sendMessage) {
+      window.chrome.runtime.sendMessage(
         { type: 'SET_THEME', themeName },
         (response) => {
-          if (chrome.runtime.lastError) {
-            console.error(chrome.runtime.lastError);
+          if (window.chrome?.runtime.lastError) {
+            console.error(window.chrome.runtime.lastError);
             return;
           }
           
@@ -63,8 +69,8 @@ const Index = () => {
     setTimeBasedEnabled(enabled);
     
     // Save preference
-    if (chrome?.storage?.local) {
-      chrome.storage.local.set({ timeBasedEnabled: enabled });
+    if (typeof window !== 'undefined' && window.chrome?.storage?.local) {
+      window.chrome.storage.local.set({ timeBasedEnabled: enabled });
     }
     
     toast({
